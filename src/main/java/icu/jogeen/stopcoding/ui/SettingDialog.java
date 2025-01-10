@@ -5,6 +5,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Optional;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -16,6 +20,8 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
+import com.alibaba.fastjson2.JSONObject;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationDisplayType;
@@ -80,11 +86,21 @@ public class SettingDialog extends JDialog {
         PropertiesComponent propertiesComponent = PropertiesComponent.getInstance();
         propertiesComponent.loadFields(settings);
         DataCenter.settingData = settings;
-        openRbtn.setSelected(DataCenter.settingData.isOpen());
-        workTimeTF.setText(DataCenter.settingData.getWorkTime() + "");
-        restTimeTF.setText(DataCenter.settingData.getRestTime() + "");
+
+        // 读取用户配置
+        JSONObject data = new JSONObject();
+        try {
+            data = JSONObject.parseObject(new String(Files.readAllBytes(Paths.get(SettingData.FILE_PATH))));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        openRbtn.setSelected(Optional.ofNullable(data).map(item -> item.getBoolean("isOpen")).orElse(DataCenter.settingData.isOpen()));
+        workTimeTF.setText(Optional.ofNullable(data).map(item -> item.getString("worTimeTFText")).orElse(String.valueOf(DataCenter.settingData.getWorkTime())));
+        restTimeTF.setText(Optional.ofNullable(data).map(item -> item.getString("restTimeTFText")).orElse(String.valueOf(DataCenter.settingData.getRestTime())));
         descJL.setText(DataCenter.getSettingDesc());
-        openRbtn.setText(openRbtn.isSelected() ? "Running" : "Stopped");
+        openRbtn.setText(Optional.ofNullable(data)
+                .filter(d -> d.containsKey("isOpen")).filter(d -> d.getBoolean("isOpen")).map(d -> "Running").orElse("Stopped"));
     }
 
     /**

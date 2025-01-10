@@ -1,6 +1,11 @@
 package icu.jogeen.stopcoding.data;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.intellij.ide.util.PropertyName;
+
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class SettingData {
 
     public static final int DEFAULT_WORK_TIME = 1;
@@ -14,6 +19,8 @@ public class SettingData {
 
     @PropertyName("StopCoding:SettingData:restTime")
     private int restTime = DEFAULT_REST_TIME;
+
+    public static final String FILE_PATH = System.getProperty("user.home") + "/.stopcoding-idea-plugin-data.txt";
 
     public boolean isOpen() {
         return isOpen;
@@ -44,6 +51,18 @@ public class SettingData {
         settings.setRestTime(restTimeTFText);
         settings.setWorkTime(worTimeTFText);
         settings.setOpen(selected);
+
+        // 持久化保存工作、休息间隔
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("isOpen", selected);
+        jsonObject.put("restTimeTFText", restTimeTFText);
+        jsonObject.put("worTimeTFText", worTimeTFText);
+        try (FileWriter writer = new FileWriter(FILE_PATH)) {
+            writer.write(jsonObject.toString());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
         return settings;
     }
 
