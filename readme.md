@@ -16,6 +16,7 @@
 
 
 ### ChangeLog
+- V1.3 add self-starting and persistent user settings functionality.
 - V1.2 add icon(Thanks for the icon provided by my good friend Hu Wei).
 - V1.1 update Guide to use.
 - V1.0 release.
