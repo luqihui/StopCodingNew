@@ -48,7 +48,7 @@
 
     <applicationListeners>
         <listener class="icu.jogeen.stopcoding.StopCodingSettingAction"
-                  topic="com.intellij.openapi.application.ApplicationActivationListener"/>
+                  topic="com.intellij.ide.AppLifecycleListener"/>
     </applicationListeners>
 
 </idea-plugin>
